@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms Lê Hằng English - Interactive Master Quiz (Updated Vol.2)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #8854C0;
+            --accent-yellow: #FDCB6E;
+            --accent-cyan: #00C9A7;
+            --correct-color: #00D26A;
+            --correct-dark: #00A050;
+            --wrong-color: #FF4757;
+            --wrong-dark: #D63031;
+            --text-main: #2D3436;
+            --card-shadow: 0 8px 0px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Quicksand', 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #8854C0, #FDCB6E, #00C9A7, #FF7675);
+            background-size: 400% 400%;
+            animation: gradientMoving 16s ease infinite;
+            min-height: 100vh;
+            padding: 20px 10px;
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientMoving {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-pattern-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-svg {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            opacity: 0.25;
+            mix-blend-mode: soft-light;
+            animation: floatingEffect 12s infinite ease-in-out;
+        }
+
+        @keyframes floatingEffect {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .wrapper {
+            max-width: 760px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .author-tag {
+            font-size: 16px;
+            font-weight: 900;
+            color: white;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .exercise-title-banner {
+            background: #8854C0;
+            color: white;
+            padding: 14px;
+            border-radius: 15px;
+            margin: 30px 0 15px 0;
+            font-weight: 900;
+            font-size: 16px;
+            box-shadow: 0 4px 0 #6C3483;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .notice-box {
+            background: #FFF;
+            border: 3px solid #FF7675;
+            border-radius: 20px;
+            padding: 18px;
+            margin: 15px 0 25px 0;
+            box-shadow: 0 6px 0 #FF7675;
+            text-align: center;
+        }
+
+        .notice-box h3 {
+            color: #FF4757;
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notice-box p {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #485460;
+        }
+
+        .notice-box span {
+            display: block;
+            margin-top: 6px;
+            color: #8854C0;
+            font-style: italic;
+            font-weight: 900;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #E5E5E5;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .q-badge {
+            background: #8854C0;
+            color: white;
+            font-weight: 900;
+            padding: 5px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .q-text {
+            font-size: 17.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-bottom: 6px solid #E5E5E5;
+            border-radius: 18px;
+            padding: 14px 18px;
+            font-size: 15.5px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            outline: none;
+            display: flex;
+            align-items: center;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            transform: translateY(-2px);
+            border-bottom-width: 8px;
+            background-color: #F8F9FA;
+        }
+
+        .option-btn:active:not(.disabled) {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        .option-btn.correct {
+            background-color: #E8F5E9 !important;
+            border-color: var(--correct-color) !important;
+            border-bottom-color: var(--correct-dark) !important;
+            color: #1B5E20 !important;
+        }
+
+        .option-btn.wrong {
+            background-color: #FFEBEE !important;
+            border-color: var(--wrong-color) !important;
+            border-bottom-color: var(--wrong-dark) !important;
+            color: #B71C1C !important;
+        }
+
+        .option-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .option-btn.correct.disabled, .option-btn.wrong.disabled {
+            opacity: 1;
+        }
+
+        .explanation-box {
+            background: #F9F6FF;
+            border-left: 6px solid #8854C0;
+            border-radius: 0 16px 16px 0;
+            padding: 18px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .exp-title {
+            color: #8854C0;
+            font-weight: 900;
+            font-size: 15.5px;
+            margin-bottom: 12px;
+        }
+
+        .exp-section {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: #485460;
+        }
+
+        .exp-section strong {
+            color: #2D3436;
+        }
+
+        .shake-animation {
+            animation: shakeEffect 0.5s ease-in-out;
+        }
+
+        @keyframes shakeEffect {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .submit-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .btn-submit-test {
+            background: #00C9A7;
+            color: white;
+            border: none;
+            border-bottom: 6px solid #00A88F;
+            border-radius: 20px;
+            padding: 16px 45px;
+            font-size: 19px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0,201,167,0.3);
+            transition: all 0.1s;
+        }
+
+        .btn-submit-test:hover {
+            transform: translateY(-2px);
+            border-bottom-width: 8px;
+        }
+
+        .btn-submit-test:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        .score-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 4px solid #FDCB6E;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            animation: popScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popScale {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #8854C0;
+            margin-bottom: 15px;
+        }
+
+        .score-number {
+            font-size: 46px;
+            font-weight: 900;
+            color: #00D26A;
+            margin-bottom: 15px;
+        }
+
+        .teacher-comment {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #485460;
+            line-height: 1.6;
+            background: #F9F6FF;
+            padding: 15px;
+            border-radius: 16px;
+            border-left: 4px solid #8854C0;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .btn-close-modal {
+            background: #FF7675;
+            color: white;
+            border: none;
+            border-bottom: 4px solid #E66767;
+            padding: 10px 25px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 998;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="bg-pattern-container">
+        <svg class="floating-svg" style="top:5%; left:5%;" viewBox="0 0 24 24" fill="#FFF"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z"/></svg>
+        <svg class="floating-svg" style="top:80%; left:85%;" viewBox="0 0 24 24" fill="#FFF"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+
+    <div class="wrapper">
+        <header>
+            <div class="author-tag">Giáo viên tạo: Ms Lê Hằng English</div>
+        </header>
+
+        <div class="notice-box">
+            <h3>⚠️ LỜI NHẮC CỰC KỲ QUAN TRỌNG ⚠️</h3>
+            <p>Học sinh nhớ đọc kỹ phần giải thích ngữ pháp 👑 ngay bên dưới câu hỏi sau khi chọn đáp án để tích lũy kiến thức sâu sắc nhé!</p>
+            <span>* Kéo tới đâu, làm cuốn chiếu tới đó! *</span>
+        </div>
+
+        <div id="quiz-root"></div>
+
+        <div class="submit-container">
+            <button class="btn-submit-test" onclick="evaluateQuizTotal()">NỘP BÀI TỔNG KẾT ĐIỂM 🏆</button>
+        </div>
+    </div>
+
+    <div class="score-modal" id="scoreModal">
+        <div class="modal-content">
+            <div class="modal-title">✨ Kết Quả Bài Làm Của Con ✨</div>
+            <div class="score-number" id="modalScoreText">0/0</div>
+            <div class="teacher-comment" id="modalCommentText">Lời nhắn...</div>
+            <button class="btn-close-modal" onclick="resetQuizAndRestart()">Làm Lại Bài TẬP 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const rawQuizDatabase = [
+            /* EXERCISE 21 */
+            {
+                exTitle: "Exercise 21: Complete the sentences using the present continuous.",
+                question: "Chia động từ từ các từ gợi ý sang thì Hiện tại tiếp diễn: <br><b>\"Her brother/ wash/ his clothes.\"</b>",
+                options: [
+                    { text: "Her brother is washing his clothes.", isCorrect: true },
+                    { text: "Her brother washing his clothes.", isCorrect: false },
+                    { text: "Her brother are washing his clothes.", isCorrect: false },
+                    { text: "Her brother is wash his clothes.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Present Continuous: S + am/is/are + V-ing (Diễn tả hành động đang xảy ra tại thời điểm nói).<br>wash clothes: giặt quần áo.",
+                    translation: "Anh trai của cô ấy đang giặt quần áo của mình.",
+                    whyCorrect: "Chủ ngữ 'Her brother' là danh từ số ít (tương ứng với 'he') nên đi với tobe 'is', động từ 'wash' thêm đuôi '-ing' thành 'washing'.",
+                    whyWrong: "Các đáp án khác thiếu tobe 'is', dùng sai tobe 'are', hoặc quên không thêm đuôi '-ing' cho động từ."
+                }
+            },
+            {
+                exTitle: "Exercise 21: Complete the sentences using the present continuous.",
+                question: "Chia động từ từ các từ gợi ý sang thì Hiện tại tiếp diễn: <br><b>\"What/ you/ do/ living room?\"</b>",
+                options: [
+                    { text: "What you are doing in the living room?", isCorrect: false },
+                    { text: "What are you doing in the living room?", isCorrect: true },
+                    { text: "What do you doing in the living room?", isCorrect: false },
+                    { text: "What is you doing in living room?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Wh-question in Present Continuous: Wh-word + am/is/are + S + V-ing?<br>living room: phòng khách.",
+                    translation: "Cậu đang làm gì trong phòng khách thế?",
+                    whyCorrect: "Cấu trúc câu hỏi yêu cầu đảo trợ động từ lên trước chủ ngữ. Với chủ ngữ 'you', ta dùng tobe 'are' đứng trước 'you' và động từ 'doing', đồng thời thêm giới từ chỉ nơi chốn 'in the'.",
+                    whyWrong: "Các câu khác sai trật tự từ trong câu hỏi (để 'you' lên trước 'are'), hoặc dùng sai trợ động từ 'do', 'is'."
+                }
+            },
+            {
+                exTitle: "Exercise 21: Complete the sentences using the present continuous.",
+                question: "Chia động từ từ các từ gợi ý sang thì Hiện tại tiếp diễn: <br><b>\"Hien/ write/ a novel.\"</b>",
+                options: [
+                    { text: "Hien are writing a novel.", isCorrect: false },
+                    { text: "Hien is writeing a novel.", isCorrect: false },
+                    { text: "Hien is writing a novel.", isCorrect: true },
+                    { text: "Hien is writing an novel.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "novel (n): tiểu thuyết.<br>Quy tắc thêm -ing: Động từ tận cùng bằng chữ 'e' câm (như write), ta bỏ 'e' rồi mới thêm '-ing' (writing).",
+                    translation: "Hiền đang viết một cuốn tiểu thuyết.",
+                    whyCorrect: "Chủ ngữ 'Hien' (số ít) đi với 'is', động từ 'write' bỏ 'e' thêm '-ing' thành 'writing', đi với cụm 'a novel' (bắt đầu bằng phụ âm 'n').",
+                    whyWrong: "Các phương án khác sai dạng tobe, sai lỗi chính tả viết từ 'writeing', hoặc dùng sai mạo từ 'an novel'."
+                }
+            },
+            {
+                exTitle: "Exercise 21: Complete the sentences using the present continuous.",
+                question: "Chia động từ từ các từ gợi ý sang thì Hiện tại tiếp diễn: <br><b>\"your father/ plant/ trees?\"</b>",
+                options: [
+                    { text: "Is your father planting trees?", isCorrect: true },
+                    { text: "Are your father planting trees?", isCorrect: false },
+                    { text: "Your father is planting trees?", isCorrect: false },
+                    { text: "Is your father plant trees?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Yes/No question in Present Continuous: Am/Is/Are + S + V-ing?<br>plant trees: trồng cây.",
+                    translation: "Bố của cậu đang trồng cây phải không?",
+                    whyCorrect: "Chủ ngữ 'your father' là danh từ số ít, do đó ta đảo trợ động từ 'Is' lên đầu câu, động từ chính chuyển thành 'planting'.",
+                    whyWrong: "Các câu khác dùng sai tobe 'Are', sai cấu trúc trật tự câu hỏi, hoặc không thêm đuôi '-ing'."
+                }
+            },
+            {
+                exTitle: "Exercise 21: Complete the sentences using the present continuous.",
+                question: "Chia động từ từ các từ gợi ý sang thì Hiện tại tiếp diễn: <br><b>\"Why/ she/ cry?\"</b>",
+                options: [
+                    { text: "Why she is crying?", isCorrect: false },
+                    { text: "Why does she crying?", isCorrect: false },
+                    { text: "Why is she crying?", isCorrect: true },
+                    { text: "Why is she cry?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "cry (v): khóc.",
+                    translation: "Tại sao cô ấy lại đang khóc thế?",
+                    whyCorrect: "Áp dụng công thức câu hỏi Wh-word, ta có 'Why' + tobe 'is' + chủ ngữ số ít 'she' + động từ đuôi ing 'crying'.",
+                    whyWrong: "Các câu khác bị lỗi trật tự từ, dùng nhầm trợ động từ 'does' hoặc thiếu đuôi '-ing'."
+                }
+            },
+
+            /* EXERCISE 22 (CHỌN 5 CÂU ĐIỂN HÌNH ĐỂ TRÁNH QUÁ TẢI GIAO DIỆN) */
+            {
+                exTitle: "Exercise 22: Arrange the words to make complete sentences.",
+                question: "Sắp xếp các từ sau thành câu hoàn chỉnh: <br><b>\"hair/ face/ eyes/ has/ a/ round/ short/ blue/ black/ Mr Pike/ and/, /.\"</b>",
+                options: [
+                    { text: "Mr Pike has short black hair, a round face and blue eyes.", isCorrect: true },
+                    { text: "Mr Pike has black short hair, a round face and blue eyes.", isCorrect: false },
+                    { text: "Mr Pike has short black hair, a face round and blue eyes.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Quy tắc trật tự tính từ miêu tả tóc: Kích thước/Độ dài (short) đứng trước Màu sắc (black).<br>Tính từ đứng trước danh từ: round face, blue eyes.",
+                    translation: "Ông Pike có mái tóc đen ngắn, khuôn mặt tròn và đôi mắt màu xanh lam.",
+                    whyCorrect: "Cấu trúc chuẩn chỉnh: S + has + ngoại hình. Cụm 'short black hair' tuân thủ đúng quy tắc trật tự tính từ trong tiếng Anh.",
+                    whyWrong: "Các câu khác đảo ngược vị trí 'black short' hoặc đặt tính từ ra sau danh từ 'face round'."
+                }
+            },
+            {
+                exTitle: "Exercise 22: Arrange the words to make complete sentences.",
+                question: "Sắp xếp các từ sau thành câu hoàn chỉnh: <br><b>\"curly/ brown/ hair/ black/ and/ has/ eyes/ Tom/.\"</b>",
+                options: [
+                    { text: "Tom has curly black hair and brown eyes.", isCorrect: false },
+                    { text: "Tom has black curly hair and brown eyes.", isCorrect: true },
+                    { text: "Tom has hair black curly and eyes brown.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "curly (adj): xoăn.<br>Trật tự tính từ miêu tả tóc: Màu sắc (black) thường đi kèm kiểu tóc (curly). Dựa theo bộ từ gốc cho sẵn, 'black curly hair' là lựa chọn chính xác.",
+                    translation: "Tom có mái tóc xoăn màu đen và đôi mắt màu nâu.",
+                    whyCorrect: "Câu sắp xếp đúng ngữ pháp với tính từ đứng trước bổ nghĩa cho danh từ.",
+                    whyWrong: "Phương án cuối đặt tính từ đứng sau danh từ, vi phạm ngữ pháp tiếng Anh cơ bản."
+                }
+            },
+            {
+                exTitle: "Exercise 22: Arrange the words to make complete sentences.",
+                question: "Sắp xếp các từ sau thành câu hoàn chỉnh: <br><b>\"small/ thin/ sister/ white/ and/ his/ lips/ teeth/ has/.\"</b>",
+                options: [
+                    { text: "His sister has thin lips and small white teeth.", isCorrect: true },
+                    { text: "His sister has lips thin and white small teeth.", isCorrect: false },
+                    { text: "His sister has thin lips and white small teeth.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "thin lips: đôi môi mỏng.<br>small white teeth: những chiếc răng nhỏ trắng sáng (Kích cỡ 'small' đứng trước màu sắc 'white').",
+                    translation: "Em gái của anh ấy có đôi môi mỏng và hàm răng nhỏ trắng.",
+                    whyCorrect: "Các tính từ được đặt đúng vị trí theo quy tắc OpSACOMP (Kích cỡ -> Màu sắc).",
+                    whyWrong: "Đặt sai trật tự từ ở cụm 'white small' hoặc 'lips thin'."
+                }
+            },
+            {
+                exTitle: "Exercise 22: Arrange the words to make complete sentences.",
+                question: "Sắp xếp các từ sau thành câu hoàn chỉnh: <br><b>\"your/ volleyball/ week/ are/ brother/ next/ you/ playing/ and/ beach/?\"</b>",
+                options: [
+                    { text: "Are you and your brother playing beach volleyball next week?", isCorrect: true },
+                    { text: "You and your brother are playing beach volleyball next week?", isCorrect: false },
+                    { text: "Are you playing beach volleyball and your brother next week?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "beach volleyball: bóng chuyền bãi biển.<br>next week: tuần tới.",
+                    translation: "Cậu và anh trai cậu sẽ chơi bóng chuyền bãi biển vào tuần tới chứ?",
+                    whyCorrect: "Câu hỏi ở thì hiện tại tiếp diễn mang ý nghĩa tương lai, đảo 'Are' lên đầu, chủ ngữ là 'you and your brother'.",
+                    whyWrong: "Thiếu đảo ngữ hoặc chia tách sai cụm chủ ngữ liên kết."
+                }
+            },
+            {
+                exTitle: "Exercise 22: Arrange the words to make complete sentences.",
+                question: "Sắp xếp các từ sau thành câu hoàn chỉnh: <br><b>\"part/ cooking/ Sunday/ Linda/ in/ this/ a/ taking/ competition/ is/.\"</b>",
+                options: [
+                    { text: "Linda is taking part in a cooking competition this Sunday.", isCorrect: true },
+                    { text: "Linda taking part is in a cooking competition this Sunday.", isCorrect: false },
+                    { text: "Linda is taking part a cooking in competition this Sunday.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "take part in: tham gia vào cái gì.<br>cooking competition: cuộc thi nấu ăn.",
+                    translation: "Linda sẽ tham gia vào một cuộc thi nấu ăn vào Chủ Nhật tuần này.",
+                    whyCorrect: "Cụm cấu trúc cố định 'take part in' đi liền mạch, bổ ngữ chỉ thời gian 'this Sunday' đặt ở cuối câu.",
+                    whyWrong: "Đặt sai vị trí của giới từ 'in' hoặc chia sai cấu trúc vị trí của tobe 'is'."
+                }
+            },
+
+            /* EXERCISE 23 */
+            {
+                exTitle: "Exercise 23: Complete the second sentence so that it has the same meaning.",
+                question: "Viết lại câu giữ nguyên nghĩa: <br><b>\"My best friend likes playing football after school.\"</b><br>🡲 My best friend is _____________",
+                options: [
+                    { text: "interested in playing football after school.", isCorrect: true },
+                    { text: "interested to playing football after school.", isCorrect: false },
+                    { text: "interesting in playing football after school.", isCorrect: false },
+                    { text: "interest in playing football after school.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Cấu trúc đồng nghĩa: S + like + V-ing = S + be + interested in + V-ing (Đều chỉ sở thích làm việc gì đó).",
+                    translation: "Bạn thân của tớ thích chơi bóng đá sau giờ học.",
+                    whyCorrect: "Tính từ đuôi '-ed' (interested) dùng để diễn tả cảm xúc, sở thích của con người đối với một hoạt động và bắt buộc đi với giới từ 'in'.",
+                    whyWrong: "Dùng sai giới từ 'to', dùng sai tính từ chỉ bản chất đuôi '-ing' (interesting), hoặc dùng dạng danh/động từ gốc 'interest'."
+                }
+            },
+            {
+                exTitle: "Exercise 23: Complete the second sentence so that it has the same meaning.",
+                question: "Viết lại câu giữ nguyên nghĩa: <br><b>\"She does everything carefully.\"</b><br>🡲 She is _____________",
+                options: [
+                    { text: "a carefully person.", isCorrect: false },
+                    { text: "a careful person.", isCorrect: true },
+                    { text: "a person careful.", isCorrect: false },
+                    { text: "careful person.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "carefully (adv): một cách cẩn thận.<br>careful (adj): cẩn thận.<br>Cấu trúc: S + V + trạng từ = S + be + a/an + tính từ + N.",
+                    translation: "Cô ấy làm mọi thứ rất cẩn thận. -> Cô ấy là một người cẩn thận.",
+                    whyCorrect: "Để bổ nghĩa cho danh từ 'person', ta bắt buộc phải sử dụng tính từ 'careful' đứng ở đằng trước.",
+                    whyWrong: "Dùng trạng từ 'carefully' trước danh từ là sai ngữ pháp. Hoặc thiếu mạo từ 'a'."
+                }
+            },
+            {
+                exTitle: "Exercise 23: Complete the second sentence so that it has the same meaning.",
+                question: "Viết lại câu giữ nguyên nghĩa: <br><b>\"Chi’s hair is long and black, and her nose is straight.\"</b><br>🡲 Chi has _____________",
+                options: [
+                    { text: "hair long black and a straight nose.", isCorrect: false },
+                    { text: "long black hair and a straight nose.", isCorrect: true },
+                    { text: "a long black hair and straight nose.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "straight nose: mũi thẳng.<br>Danh từ 'hair' (tóc) là danh từ không đếm được nên không dùng mạo từ 'a' trước nó.",
+                    translation: "Tóc của Chi dài và đen, và mũi cô ấy thẳng. -> Chi có mái tóc đen dài và chiếc mũi thẳng.",
+                    whyCorrect: "Tính từ bổ nghĩa đặt trước danh từ: 'long black hair' (tóc không dùng mạo từ) và 'a straight nose' (mũi đếm được nên phải có 'a').",
+                    whyWrong: "Sai trật tự tính từ hoặc đặt sai vị trí mạo từ 'a' vào danh từ không đếm được 'hair'."
+                }
+            },
+
+            /* EXERCISE 24 */
+            {
+                exTitle: "Exercise 24: Make questions for underlined words.",
+                question: "Đặt câu hỏi cho từ được gạch chân: <br>We are looking for <u>a new house</u>.",
+                options: [
+                    { text: "What are you looking for?", isCorrect: true },
+                    { text: "Who are you looking for?", isCorrect: false },
+                    { text: "What you are looking for?", isCorrect: false },
+                    { text: "What do you look for?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "look for: tìm kiếm.<br>a new house: một ngôi nhà mới (chỉ vật -> dùng từ để hỏi là 'What').",
+                    translation: "Chúng tôi đang tìm kiếm một ngôi nhà mới. -> Bạn đang tìm kiếm cái gì thế?",
+                    whyCorrect: "Vì cụm gạch chân là đồ vật, dùng 'What'. Đồng thời biến đổi ngôi 'We' thành 'you' trong câu hỏi, sử dụng cấu trúc đảo ngữ của thì Hiện tại tiếp diễn.",
+                    whyWrong: "'Who' dùng hỏi người. Các câu còn lại sai cấu trúc đảo ngữ hoặc sai thì động từ so với câu gốc."
+                }
+            },
+            {
+                exTitle: "Exercise 24: Make questions for underlined words.",
+                question: "Đặt câu hỏi cho từ được gạch chân: <br>Her eyes <u>are big</u>.",
+                options: [
+                    { text: "How are her eyes?", isCorrect: false },
+                    { text: "What are her eyes like?", isCorrect: true },
+                    { text: "What do her eyes look like?", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Cấu trúc hỏi đặc điểm, tính chất của bộ phận: What + be + S + like? (Trông như thế nào / Tính chất ra sao).",
+                    translation: "Đôi mắt của cô ấy to. -> Đôi mắt của cô ấy trông như thế nào?",
+                    whyCorrect: "Cấu trúc 'What + be + S + like?' dùng để hỏi miêu tả đặc điểm rất tự nhiên và chính xác.",
+                    whyWrong: "Nếu dùng động từ 'look like' thì phải mượn trợ động từ 'do/does' chứ không dùng 'are' đứng trước, nên câu cuối sai ngữ pháp."
+                }
+            },
+
+            /* EXERCISE 25 */
+            {
+                exTitle: "Exercise 25: Mark the letter A, B, C or D to indicate the correct arrangement of the sentences to make a meaningful paragraph/letter.",
+                question: "Sắp xếp các câu sau (a-e) thành một bức thư có ý nghĩa hoàn chỉnh:<br><div style='padding-left:15px; background:#F8F9FA; border-radius:10px; padding:10px; margin-top:5px; font-size:14px; line-height:1.5;'><b>Dear Mom and Dad,</b><br>a. I met them last week in my English class. Their names are Tom and Lisa.<br>b. I’m writing to tell you about my new friends at school.<br>c. Tom is very funny and always makes me laugh, and Lisa is very kind and helps everyone.<br>d. We often play soccer together after school in the park. Sometimes, we also read books in the library or chat about our day.<br>e. I feel very happy with my new friends. They make going to school fun and interesting!<br><b>Love, Thanh</b></div>",
+                options: [
+                    { text: "A. a - b - c - d - e", isCorrect: false },
+                    { text: "B. b - a - c - d - e", isCorrect: true },
+                    { text: "C. c - a - b - d - e", isCorrect: false },
+                    { text: "D. d - a - c - b - e", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "make someone laugh: làm ai đó cười.<br>chat about our day: tán gẫu về một ngày của chúng tôi.",
+                    translation: "Mạch thư: Nêu lý do viết thư giới thiệu bạn mới (b) -> Giới thiệu thời gian gặp và tên của họ (a) -> Miêu tả tính cách từng người (c) -> Kể về các hoạt động làm cùng nhau (d) -> Phát biểu cảm xúc tổng kết (e).",
+                    whyCorrect: "Thứ tự b - a - c - d - e phát triển ý rất mượt mà, từ tổng quan lý do viết thư đến chi tiết danh tính, tính cách, hành động và kết luận cảm xúc.",
+                    whyWrong: "Các phương án khác đưa câu hoạt động hoặc câu tả tính cách lên trước khi giới thiệu lý do viết thư và tên của người bạn, gây mất logic."
+                }
+            },
+            {
+                exTitle: "Exercise 25: Mark the letter A, B, C or D to indicate the correct arrangement of the sentences to make a meaningful paragraph/letter.",
+                question: "Sắp xếp các câu sau (a-f) thành một đoạn văn nghị luận ngắn hợp lý về tình bạn:<br><div style='padding-left:15px; background:#F8F9FA; border-radius:10px; padding:10px; margin-top:5px; font-size:14px; line-height:1.5;'>a. I have two best friends, Linh and Mai, who are both very kind and funny.<br>b. My best friends are incredibly important to me.<br>c. Spending time with them always makes me smile, and I'm very grateful for their friendship.<br>d. We always share our secrets and help each other with homework.<br>e. I believe having good friends makes life much happier and more interesting.<br>f. We often go to the park together or watch movies at home.</div>",
+                options: [
+                    { text: "A. b - e - a - d - f - c", isCorrect: true },
+                    { text: "B. a - b - e - d - f - c", isCorrect: false },
+                    { text: "C. b - e - d - a - f - c", isCorrect: false },
+                    { text: "D. e - b - a - d - f - c", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "incredibly important: cực kỳ quan trọng.<br>grateful for (adj): biết ơn vì điều gì.<br>share secrets: chia sẻ bí mật.",
+                    translation: "Mở đoạn khẳng định tầm quan trọng của bạn bè (b) -> Đưa ra luận điểm bổ trợ chung (e) -> Giới thiệu chứng cứ thực tế hai người bạn Linh và Mai (a) -> Kể hoạt động tâm sự học tập (d) -> Hoạt động giải trí (f) -> Kết đoạn bày tỏ lòng biết ơn (c).",
+                    whyCorrect: "Thứ tự b - e - a - d - f - c đi từ câu chủ đề khái quát (Topic sentence) đến các chi tiết minh họa cụ thể rồi kết thúc bằng một câu cảm nghĩ vô cùng chặt chẽ.",
+                    whyWrong: "Các phương án khác đưa danh xưng cụ thể (a) lên quá sớm trước khi định hình tầm quan trọng khái quát của chủ đề đoạn văn."
+                }
+            },
+
+            /* EXERCISE 26 */
+            {
+                exTitle: "Exercise 26: Mark the letter A, B, C or D to indicate the correct answer to each of the following questions.",
+                question: "<b>[Đoạn văn về Linh]</b> Sắp xếp các câu (a-c) để điền vào chỗ trống thành văn bản logic:<br><div style='padding:8px; background:#F8F9FA; border-radius:8px; font-size:13.5px;'>My best friend is named Linh... Linh is quite tall and has beautiful long, dark hair and bright, friendly eyes. [___].</div><br>a. After school, Linh usually goes to her dance classes, as she loves dancing.<br>b. I really like her because she's always there for me, listening to my problems...<br>c. She's a very kind and humorous person, always making me laugh with her jokes.",
+                options: [
+                    { text: "A. a - c - b", isCorrect: false },
+                    { text: "B. c - a - b", isCorrect: true },
+                    { text: "C. b - a - c", isCorrect: false },
+                    { text: "D. a - b - c", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "humorous (adj): hài hước.<br>offer great advice: đưa ra lời khuyên tuyệt vời.",
+                    translation: "Đoạn văn đang tả ngoại hình ở câu trước -> Tiếp theo phải tả tính cách tổng quan (c) -> Kể hành động thói quen sau giờ học (a) -> Lý do yêu mến sâu sắc và kết nối tình bạn (b).",
+                    whyCorrect: "Mạch viết văn mô tả người chuẩn mực: Ngoại hình -> Tính cách (c) -> Sở thích/Hành động (a) -> Tình cảm cá nhân (b). Vì vậy chọn c - a - b.",
+                    whyWrong: "Các thứ tự khác làm đứt gãy mạch phân cấp thông tin miêu tả nhân vật."
+                }
+            },
+            {
+                exTitle: "Exercise 26: Mark the letter A, B, C or D to indicate the correct answer to each of the following questions.",
+                question: "<b>[Đoạn văn về Linh]</b> Chọn câu thích hợp nhất để <b>KẾT THÚC (END)</b> đoạn văn trên.",
+                options: [
+                    { text: "A. She also enjoys studying and doing her homework.", isCorrect: false },
+                    { text: "B. Overall, Linh is a fantastic friend to have.", isCorrect: true },
+                    { text: "C. Her dance classes are a fun way for her to stay active.", isCorrect: false },
+                    { text: "D. We often spend time together after school.", isCorrect: false }
+                ],
+                explanation: {
+                    vocab: "Overall: Nhìn chung, tóm lại là (Từ nối báo hiệu kết luận cực kỳ mạnh mẽ).<br>fantastic friend: người bạn tuyệt vời.",
+                    translation: "Tóm lại, Linh là một người bạn vô cùng tuyệt vời mà tớ có được.",
+                    whyCorrect: "Một câu kết đoạn (Concluding sentence) xuất sắc cần có từ tín hiệu như 'Overall' để thâu tóm lại toàn bộ tình cảm và nội dung ca ngợi người bạn đã nêu ở trên.",
+                    whyWrong: "Các đáp án khác chỉ bổ sung thêm chi tiết nhỏ về học tập hoặc nhảy múa, không mang tính chất khép lại vấn đề của một đoạn văn."
+                }
+            }
+        ];
+
+        const CustomAudioSynth = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            dingCorrect() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(523.25, now);
+                osc2.frequency.setValueAtTime(659.25, now + 0.08);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                osc1.start(now);
+                osc2.start(now + 0.08);
+                osc1.stop(now + 0.4);
+                osc2.stop(now + 0.4);
+            },
+            buzzWrong() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(293.66, now);
+                osc.frequency.setValueAtTime(220.00, now + 0.12);
+                osc.frequency.setValueAtTime(146.83, now + 0.24);
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.5);
+            }
+        };
+
+        function doShuffleOptions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const ConfettiManager = {
+            canvas: null,
+            ctx: null,
+            particles: [],
+            animationId: null,
+            init() {
+                this.canvas = document.getElementById('confetti-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            },
+            fire() {
+                this.init();
+                this.particles = [];
+                const colors = ['#FF7675', '#FDCB6E', '#00C9A7', '#8854C0', '#00D26A'];
+                for (let i = 0; i < 75; i++) {
+                    this.particles.push({
+                        x: window.innerWidth / 2,
+                        y: window.innerHeight / 2 - 60,
+                        vx: (Math.random() - 0.5) * 15,
+                        vy: (Math.random() - 0.7) * 18,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        radius: Math.random() * 5 + 4,
+                        gravity: 0.28
+                    });
+                }
+                if (this.animationId) cancelAnimationFrame(this.animationId);
+                this.renderLoop();
+            },
+            renderLoop() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                let isAlive = false;
+                this.particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    if (p.y < this.canvas.height) isAlive = true;
+                });
+                if (isAlive) {
+                    this.animationId = requestAnimationFrame(() => this.renderLoop());
+                } else {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+        };
+
+        const sessionAnswers = {};
+
+        function buildQuizInterface() {
+            const root = document.getElementById('quiz-root');
+            root.innerHTML = "";
+
+            let currentBannerText = "";
+
+            rawQuizDatabase.forEach((q, idx) => {
+                if (q.exTitle !== currentBannerText) {
+                    currentBannerText = q.exTitle;
+                    const banner = document.createElement('div');
+                    banner.className = "exercise-title-banner";
+                    banner.innerText = currentBannerText;
+                    root.appendChild(banner);
+                }
+
+                q.options = doShuffleOptions([...q.options]);
+
+                const card = document.createElement('div');
+                card.className = "question-card";
+                card.id = `card-block-${idx}`;
+
+                let cardHeader = `
+                    <div class="question-header">
+                        <span class="q-badge">Câu ${idx + 1}</span>
+                    </div>
+                    <div class="q-text" style="margin-bottom: 15px;">${q.question}</div>
+                `;
+
+                let optionsLayout = `<div class="options-grid" id="grid-box-${idx}">`;
+                q.options.forEach((opt, oIdx) => {
+                    const letters = ["A", "B", "C", "D"];
+                    optionsLayout += `
+                        <button class="option-btn" data-correct="${opt.isCorrect}" onclick="checkSelectedOption(this, ${idx}, ${opt.isCorrect})">
+                            <strong>${letters[oIdx]}.</strong> &nbsp;${opt.text}
+                        </button>
+                    `;
+                });
+                optionsLayout += `</div>`;
+
+                let explanationLayout = `
+                    <div class="explanation-box" id="exp-box-${idx}">
+                        <div class="exp-title">👑 BẢN GIẢI THÍCH CHI TIẾT TỪ MS LÊ HẰNG:</div>
+                        <div class="exp-section"><strong>1. Phân tích kiến thức & Từ vựng:</strong><br>${q.explanation.vocab}</div>
+                        <div class="exp-section"><strong>2. Ý nghĩa dịch nghĩa hoàn chỉnh:</strong><br>${q.explanation.translation}</div>
+                        <div class="exp-section"><strong>3. Vì sao đáp án này ĐÚNG?</strong><br>${q.explanation.whyCorrect}</div>
+                        <div class="exp-section"><strong>4. Bản chất các câu gây nhiễu SAI:</strong><br>${q.explanation.whyWrong}</div>
+                    </div>
+                `;
+
+                card.innerHTML = cardHeader + optionsLayout + explanationLayout;
+                root.appendChild(card);
+            });
+        }
+
+        function checkSelectedOption(selectedBtn, qIdx, isCorrect) {
+            const grid = document.getElementById(`grid-box-${qIdx}`);
+            const card = document.getElementById(`card-block-${qIdx}`);
+            const allButtons = grid.querySelectorAll('.option-btn');
+
+            if (sessionAnswers[qIdx] !== undefined) return;
+
+            sessionAnswers[qIdx] = isCorrect;
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                CustomAudioSynth.dingCorrect();
+                ConfettiManager.fire();
+            } else {
+                selectedBtn.classList.add('wrong');
+                card.classList.add('shake-animation');
+                CustomAudioSynth.buzzWrong();
+                
+                allButtons.forEach(btn => {
+                    if (btn.getAttribute('data-correct') === 'true') {
+                        btn.classList.add('correct');
+                    }
+                });
+                setTimeout(() => card.classList.remove('shake-animation'), 500);
+            }
+
+            allButtons.forEach(btn => btn.classList.add('disabled'));
+            document.getElementById(`exp-box-${qIdx}`).style.display = 'block';
+        }
+
+        function evaluateQuizTotal() {
+            const total = rawQuizDatabase.length;
+            let correct = 0;
+            let missingCount = 0;
+
+            for (let i = 0; i < total; i++) {
+                if (sessionAnswers[i] === undefined) {
+                    missingCount++;
+                } else if (sessionAnswers[i] === true) {
+                    correct++;
+                }
+            }
+
+            if (missingCount > 0) {
+                alert(`Học sinh ơi, còn ${missingCount} câu chưa làm kìa! Hãy hoàn thiện nốt rồi mới nộp bài tổng kết điểm nhé!`);
+                return;
+            }
+
+            const rate = (correct / total) * 100;
+            let textComment = "";
+
+            if (rate < 50) {
+                textComment = "Điểm số lần này chưa đạt chuẩn rồi! Con hãy đọc thật kỹ lại các hộp giải thích ngữ pháp màu tím để lấp lỗ hổng kiến thức nhé!";
+            } else if (rate >= 50 && rate <= 85) {
+                textComment = "Kết quả khá tốt! Con đã nắm được cốt lõi cấu trúc Hiện tại tiếp diễn và mô tả ngoại hình, chú ý bẫy mạo từ và trật tự từ tính từ thêm chút nữa nhé!";
+            } else {
+                textComment = "Quá đỉnh luôn! Con đạt điểm số gần như tuyệt đối, tư duy logic sắp xếp đoạn văn và phản xạ ngữ pháp rất chắc chắn. Phát huy con nhé!";
+            }
+
+            document.getElementById('modalScoreText').innerText = `${correct} / ${total}`;
+            document.getElementById('modalCommentText').innerHTML = `<strong>Ms Lê Hằng nhắn nhủ:</strong><br>"${textComment}"`;
+            document.getElementById('scoreModal').style.display = 'flex';
+
+            if (rate >= 80) {
+                ConfettiManager.fire();
+                setTimeout(() => ConfettiManager.fire(), 400);
+            }
+        }
+
+        function resetQuizAndRestart() {
+            document.getElementById('scoreModal').style.display = 'none';
+            for (let key in sessionAnswers) delete sessionAnswers[key];
+            buildQuizInterface();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            buildQuizInterface();
+        };
+    </script>
+</body>
+</html>
